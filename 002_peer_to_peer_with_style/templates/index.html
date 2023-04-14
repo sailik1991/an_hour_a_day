@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple P2P Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        #messages {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            background-color: #ffffff;
+            padding: 1rem;
+        }
+        #message {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h1 class="mt-5 mb-4 text-center">Simple P2P Chat</h1>
+                <div id="messages"></div>
+                <input type="text" id="message" class="form-control" placeholder="Type your message here..." onkeypress="return handleKeyPress(event)">
+                <button onclick="sendMessage()" class="btn btn-primary mt-3">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('message', function(data) {
+            $('#messages').append('<div class="mt-2">' + data + '</div>')
+        });
+
+        function sendMessage() {
+            const message = $('#message').val();
+            socket.emit('message', message);
+            $('#message').val('');
+        }
+
+function handleKeyPress(event) {
+    if (event.keyCode === 13) { // 13 is the Enter key code
+        event.preventDefault(); // Prevent the default action (new line)
+        sendMessage();
+        return false;
+    }
+    return true;
+}
+</script>
+</body>
+</html>
+
